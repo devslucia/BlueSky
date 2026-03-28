@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -50,21 +51,34 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <h1 className="text-3xl font-bold text-blue-600">BlueSky</h1>
-          <CardTitle className="text-slate-600">Iniciar Sesión</CardTitle>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-cloud-100 to-sky-100" />
+      <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-sky-200/20 to-transparent" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-sky-300/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-sky-200/10 rounded-full blur-3xl" />
+      
+      <Card className="w-full max-w-md relative z-10 shadow-2xl shadow-sky-200/50 border-sky-100">
+        <CardHeader className="text-center pb-2">
+          <div className="relative w-24 h-24 mx-auto mb-4">
+            <Image
+              src="/logo.png"
+              alt="BlueSky Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <CardTitle className="text-2xl font-bold text-sky-700">Iniciar Sesión</CardTitle>
+          <p className="text-sky-500 text-sm mt-1">Sistema de Gestión de Tienda</p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100">
                 {error}
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-sky-700 mb-2">
                 Correo electrónico
               </label>
               <Input
@@ -72,11 +86,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="correo@ejemplo.com"
+                className="touch-target h-12"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-sky-700 mb-2">
                 Contraseña
               </label>
               <Input
@@ -84,10 +99,15 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                className="touch-target h-12"
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full touch-target h-12 text-base font-semibold bg-sky-500 hover:bg-sky-600 shadow-lg shadow-sky-300/30" 
+              disabled={loading}
+            >
               {loading ? 'Iniciando...' : 'Iniciar Sesión'}
             </Button>
           </form>

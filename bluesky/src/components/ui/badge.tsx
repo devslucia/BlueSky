@@ -10,11 +10,11 @@ export const Badge: React.FC<BadgeProps> = ({
   ...props
 }) => {
   const variants = {
-    default: 'bg-slate-100 text-slate-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
-    outline: 'border border-slate-300 text-slate-700'
+    default: 'bg-sky-100 text-sky-700',
+    success: 'bg-green-100 text-green-700',
+    warning: 'bg-yellow-100 text-yellow-700',
+    danger: 'bg-red-100 text-red-700',
+    outline: 'border border-sky-200 text-sky-600 bg-white'
   }
   
   return (

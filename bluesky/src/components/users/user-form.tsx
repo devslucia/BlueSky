@@ -52,7 +52,7 @@ export function UserForm({ onSuccess, onError }: UserFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-sky-700 mb-2">
               Correo electrónico
             </label>
             <Input
@@ -60,11 +60,12 @@ export function UserForm({ onSuccess, onError }: UserFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="correo@ejemplo.com"
+              className="touch-target"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-sky-700 mb-2">
               Contraseña
             </label>
             <Input
@@ -72,25 +73,26 @@ export function UserForm({ onSuccess, onError }: UserFormProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Mínimo 6 caracteres"
+              className="touch-target"
               minLength={6}
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-sky-700 mb-2">
               Rol
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as 'secretary' | 'technician')}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-sky-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-300 touch-target"
               required
             >
               <option value="secretary">Secretaria</option>
               <option value="technician">Técnico</option>
             </select>
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full touch-target" disabled={loading}>
             {loading ? 'Creando...' : 'Crear Usuario'}
           </Button>
         </form>

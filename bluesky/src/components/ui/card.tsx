@@ -7,7 +7,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={`rounded-lg border border-slate-200 bg-white shadow-sm ${className}`}
+        className={`rounded-2xl border border-sky-100 bg-white shadow-xl shadow-sky-100/50 ${className}`}
         {...props}
       />
     )
@@ -20,7 +20,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={`flex flex-col space-y-1.5 p-6 ${className}`}
+        className={`flex flex-col space-y-1.5 p-5 md:p-6 ${className}`}
         {...props}
       />
     )
@@ -33,7 +33,7 @@ export const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttrib
     return (
       <h3
         ref={ref}
-        className={`text-lg font-semibold leading-none tracking-tight ${className}`}
+        className={`text-lg md:text-xl font-semibold leading-none tracking-tight text-sky-800 ${className}`}
         {...props}
       />
     )
@@ -44,7 +44,7 @@ CardTitle.displayName = 'CardTitle'
 export const CardContent = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className = '', ...props }, ref) => {
     return (
-      <div ref={ref} className={`p-6 pt-0 ${className}`} {...props} />
+      <div ref={ref} className={`p-5 md:p-6 pt-0 ${className}`} {...props} />
     )
   }
 )

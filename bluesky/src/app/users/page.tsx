@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { UserForm } from '@/components/users/user-form'
 import { UserList } from '@/components/users/user-list'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export default function UsersPage() {
   const { role, loading } = useAuth()
@@ -16,7 +17,7 @@ export default function UsersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-slate-500">Cargando...</div>
+        <div className="text-sky-600">Cargando...</div>
       </div>
     )
   }
@@ -36,15 +37,15 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Gestión de Usuarios</h1>
-        <button
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h1 className="text-xl md:text-2xl font-bold text-sky-800">Gestión de Usuarios</h1>
+        <Button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="touch-target"
         >
           {showForm ? 'Cancelar' : 'Nuevo Usuario'}
-        </button>
+        </Button>
       </div>
 
       {showForm && (

@@ -5,7 +5,7 @@ interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {}
 export const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className = '', ...props }, ref) => {
     return (
-      <div className="relative w-full overflow-auto">
+      <div className="relative w-full overflow-x-auto">
         <table
           ref={ref}
           className={`w-full caption-bottom text-sm ${className}`}
@@ -20,7 +20,7 @@ Table.displayName = 'Table'
 export const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className = '', ...props }, ref) => {
     return (
-      <thead ref={ref} className={`[&_tr]:border-b ${className}`} {...props} />
+      <thead ref={ref} className={`[&_tr]:border-b border-sky-100 ${className}`} {...props} />
     )
   }
 )
@@ -40,7 +40,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttribut
     return (
       <tr
         ref={ref}
-        className={`border-b transition-colors hover:bg-slate-50 ${className}`}
+        className={`border-b border-sky-100 transition-colors hover:bg-sky-50 ${className}`}
         {...props}
       />
     )
@@ -53,7 +53,7 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttr
     return (
       <th
         ref={ref}
-        className={`h-12 px-4 text-left align-middle font-medium text-slate-500 [&:has([role=checkbox])]:pr-0 ${className}`}
+        className={`h-12 px-3 md:px-4 text-left align-middle font-semibold text-sky-600 text-xs md:text-sm [&:has([role=checkbox])]:pr-0 ${className}`}
         {...props}
       />
     )
@@ -66,7 +66,7 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttr
     return (
       <td
         ref={ref}
-        className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 ${className}`}
+        className={`p-3 md:p-4 align-middle text-sky-800 text-xs md:text-sm [&:has([role=checkbox])]:pr-0 ${className}`}
         {...props}
       />
     )
