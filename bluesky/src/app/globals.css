@@ -9,11 +9,23 @@
   --primary-dark: #5B8DB8;
 }
 
+.dark {
+  --foreground: #E8F4FD;
+  --background: #0F1B2D;
+  --primary: #A8CCE8;
+  --primary-dark: #7AB3D9;
+}
+
 body {
   color: var(--foreground);
   background: linear-gradient(135deg, #F0F7FC 0%, #E5F1FA 50%, #F0F7FC 100%);
   min-height: 100vh;
   background-attachment: fixed;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background: linear-gradient(135deg, #0F1B2D 0%, #152238 50%, #0F1B2D 100%);
 }
 
 body::before {
@@ -31,21 +43,32 @@ body::before {
   z-index: -1;
 }
 
+.dark body::before {
+  background-image: 
+    radial-gradient(ellipse at 20% 30%, rgba(168, 204, 232, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(168, 204, 232, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(168, 204, 232, 0.02) 0%, transparent 60%);
+}
+
 @layer components {
   .card {
     @apply bg-white rounded-2xl shadow-lg shadow-sky-100/50 border border-sky-100;
+    @apply dark:bg-navy-50 dark:shadow-navy-300/20 dark:border-navy-200;
   }
   
   .btn-primary {
     @apply bg-sky-500 text-white hover:bg-sky-600 focus:ring-sky-400;
+    @apply dark:bg-sky-500 dark:hover:bg-sky-400 dark:text-white;
   }
   
   .btn-secondary {
     @apply bg-sky-100 text-sky-700 hover:bg-sky-200 focus:ring-sky-300;
+    @apply dark:bg-navy-200 dark:text-sky-200 dark:hover:bg-navy-300;
   }
   
   .input {
     @apply border-sky-200 focus:border-sky-400 focus:ring-sky-100;
+    @apply dark:border-navy-200 dark:bg-navy-50 dark:text-sky-100 dark:focus:border-sky-400 dark:focus:ring-sky-300;
   }
 }
 
@@ -56,6 +79,7 @@ body::before {
   
   .glass {
     @apply bg-white/80 backdrop-blur-md;
+    @apply dark:bg-navy-50/80;
   }
 }
 

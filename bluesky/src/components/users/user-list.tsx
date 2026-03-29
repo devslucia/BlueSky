@@ -80,16 +80,16 @@ export function UserList({ onDelete }: UserListProps) {
   }
 
   if (loading) {
-    return <div className="text-center py-8 text-slate-500">Cargando usuarios...</div>
+    return <div className="text-center py-8 text-slate-500 dark:text-sky-400">Cargando usuarios...</div>
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>
+    return <div className="text-center py-8 text-red-500 dark:text-red-400">{error}</div>
   }
 
   if (users.length === 0) {
     return (
-      <div className="text-center py-8 text-slate-500">
+      <div className="text-center py-8 text-slate-500 dark:text-sky-400">
         No hay usuarios registrados.
       </div>
     )

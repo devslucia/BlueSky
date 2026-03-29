@@ -52,7 +52,7 @@ export function UserForm({ onSuccess, onError }: UserFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-sky-700 mb-2">
+            <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
               Correo electrónico
             </label>
             <Input
@@ -65,7 +65,7 @@ export function UserForm({ onSuccess, onError }: UserFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-sky-700 mb-2">
+            <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
               Contraseña
             </label>
             <Input
@@ -79,13 +79,13 @@ export function UserForm({ onSuccess, onError }: UserFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-sky-700 mb-2">
+            <label className="block text-sm font-medium text-sky-700 dark:text-sky-300 mb-2">
               Rol
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as 'secretary' | 'technician')}
-              className="w-full px-4 py-3 border border-sky-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-300 touch-target"
+              className="w-full px-4 py-3 border border-sky-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-300 touch-target dark:border-navy-200 dark:bg-navy-50 dark:text-sky-100"
               required
             >
               <option value="secretary">Secretaria</option>

@@ -10,10 +10,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none'
     
     const variants = {
-      primary: 'bg-sky-500 text-white hover:bg-sky-600 focus:ring-sky-400 shadow-lg shadow-sky-200/30',
-      secondary: 'bg-sky-100 text-sky-700 hover:bg-sky-200 focus:ring-sky-300',
-      danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-400 shadow-lg shadow-red-200/30',
-      outline: 'border-2 border-sky-200 bg-transparent hover:bg-sky-50 text-sky-600'
+      primary: 'bg-sky-500 text-white hover:bg-sky-600 focus:ring-sky-400 shadow-lg shadow-sky-200/30 dark:shadow-sky-500/20',
+      secondary: 'bg-sky-100 text-sky-700 hover:bg-sky-200 focus:ring-sky-300 dark:bg-navy-200 dark:text-sky-200 dark:hover:bg-navy-300',
+      danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-400 shadow-lg shadow-red-200/30 dark:shadow-red-500/20',
+      outline: 'border-2 border-sky-200 bg-transparent hover:bg-sky-50 text-sky-600 dark:border-navy-200 dark:text-sky-300 dark:hover:bg-navy-200'
     }
     
     const sizes = {

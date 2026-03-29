@@ -17,7 +17,7 @@ export default function UsersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-sky-600">Cargando...</div>
+        <div className="text-sky-600 dark:text-sky-400">Cargando...</div>
       </div>
     )
   }
@@ -39,7 +39,7 @@ export default function UsersPage() {
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-xl md:text-2xl font-bold text-sky-800">Gestión de Usuarios</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-sky-800 dark:text-sky-200">Gestión de Usuarios</h1>
         <Button
           onClick={() => setShowForm(!showForm)}
           className="touch-target"
