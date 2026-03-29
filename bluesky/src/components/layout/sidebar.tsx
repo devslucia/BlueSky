@@ -50,7 +50,7 @@ export function Sidebar() {
     <>
       <div className="p-4 md:p-6 border-b border-sky-100 dark:border-navy-200">
         <div className="flex items-center gap-3">
-          <div className="relative w-10 h-10 md:w-12 md:h-12 flex-shrink-0 bg-white dark:bg-navy-50 rounded-xl p-1">
+          <div className="relative w-10 h-10 md:w-12 md:h-12 flex-shrink-0">
             <Image
               src="/logo.png"
               alt="BlueSky Logo"

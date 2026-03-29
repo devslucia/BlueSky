@@ -64,7 +64,7 @@ export default function LoginPage() {
       
       <Card className="w-full max-w-md relative z-10 shadow-2xl shadow-sky-200/50 dark:shadow-navy-300/30 border-sky-100 dark:border-navy-200">
         <CardHeader className="text-center pb-2">
-          <div className="relative w-24 h-24 mx-auto mb-4 bg-white dark:bg-navy-50 rounded-2xl p-2">
+          <div className="relative w-24 h-24 mx-auto mb-4">
             <Image
               src="/logo.png"
               alt="BlueSky Logo"
