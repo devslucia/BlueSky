@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServerSupabaseClient, createAnonServerClient } from '@/lib/supabase-server'
 import { UserRole } from '@/types'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createAnonServerClient()
 
     const { data: { user: authUser } } = await supabase.auth.getUser()
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createAnonServerClient()
 
     const { data: { user: authUser } } = await supabase.auth.getUser()
 
@@ -77,7 +77,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+    const adminSupabase = await createServerSupabaseClient()
+
+    const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -88,7 +90,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (newUser.user) {
-      const { error: profileError } = await supabase
+      const { error: profileError } = await adminSupabase
         .from('profiles')
         .insert({
           id: newUser.user.id,
@@ -99,7 +101,7 @@ export async function POST(request: NextRequest) {
 
       if (profileError) {
         console.error('Error creating profile:', profileError)
-        await supabase.auth.admin.deleteUser(newUser.user.id)
+        await adminSupabase.auth.admin.deleteUser(newUser.user.id)
         return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
       }
     }
