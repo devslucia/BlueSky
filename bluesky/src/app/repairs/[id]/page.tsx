@@ -1,13 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
-import { ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Clock, XCircle, ScanBarcode } from 'lucide-react'
+import toast from 'react-hot-toast'
 import type { Repair, RepairItem, Product, RepairStatus } from '@/types'
 
 const statusColors: Record<RepairStatus, 'default' | 'warning' | 'success'> = {
@@ -26,12 +28,113 @@ export default function RepairDetailPage({ params }: { params: { id: string } })
   const [repair, setRepair] = useState<Repair | null>(null)
   const [items, setItems] = useState<(RepairItem & { product?: Product })[]>([])
   const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState<Product[]>([])
+  const [barcodeInput, setBarcodeInput] = useState('')
+  const [itemQuantity, setItemQuantity] = useState(1)
+  const barcodeInputRef = useRef<HTMLInputElement>(null)
+  const lastKeyTime = useRef<number>(0)
+  const barcodeBuffer = useRef<string>('')
   const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
     fetchRepair()
+    fetchProducts()
   }, [params.id])
+
+  const fetchProducts = async () => {
+    const { data } = await supabase.from('products').select('*').order('name')
+    setProducts(data || [])
+  }
+
+  const handleBarcodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const currentTime = Date.now()
+    const timeDiff = currentTime - lastKeyTime.current
+    
+    if (e.key === 'Enter') {
+      if (barcodeBuffer.current.length > 0) {
+        processBarcode(barcodeBuffer.current)
+        barcodeBuffer.current = ''
+        setBarcodeInput('')
+      }
+      e.preventDefault()
+      return
+    }
+    
+    if (e.key.length === 1) {
+      if (timeDiff < 100) {
+        barcodeBuffer.current += e.key
+      } else {
+        barcodeBuffer.current = e.key
+      }
+      lastKeyTime.current = currentTime
+    }
+  }
+
+  const processBarcode = async (barcode: string) => {
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('barcode', barcode)
+      .single()
+
+    if (error || !product) {
+      toast.error('Producto no encontrado')
+      return
+    }
+
+    if (product.quantity <= 0) {
+      toast.error('Producto sin stock')
+      return
+    }
+
+    const existing = items.find(item => item.product_id === product.id)
+    const availableQty = product.quantity - (existing ? existing.quantity_used : 0)
+
+    if (availableQty <= 0) {
+      toast.error('Stock insuficiente')
+      return
+    }
+
+    const qtyToAdd = itemQuantity || 1
+    if (existing) {
+      const newQty = existing.quantity_used + qtyToAdd
+      if (newQty > product.quantity) {
+        toast.error('Stock insuficiente')
+        return
+      }
+      await supabase.from('repair_items').update({
+        quantity_used: newQty,
+      }).eq('id', existing.id)
+    } else {
+      await supabase.from('repair_items').insert({
+        repair_id: params.id,
+        product_id: product.id,
+        quantity_used: qtyToAdd,
+        cost_at_time: product.cost_price,
+      })
+    }
+
+    await supabase.from('products').update({
+      quantity: product.quantity - qtyToAdd,
+    }).eq('id', product.id)
+
+    await supabase.from('stock_movements').insert({
+      product_id: product.id,
+      type: 'out',
+      quantity: qtyToAdd,
+      reason: `used in repair ${params.id}`,
+    })
+
+    toast.success(`Agregado: ${product.name}`)
+    fetchRepair()
+    fetchProducts()
+    setItemQuantity(1)
+  }
+
+  const handleBarcodeButtonClick = () => {
+    barcodeInputRef.current?.focus()
+  }
 
   const fetchRepair = async () => {
     const { data: repairData } = await supabase.from('repairs').select('*').eq('id', params.id).single()
@@ -135,6 +238,38 @@ export default function RepairDetailPage({ params }: { params: { id: string } })
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Agregar Producto por Código de Barras</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4">
+            <div className="flex-1 relative">
+              <Input
+                ref={barcodeInputRef}
+                value={barcodeInput}
+                onChange={(e) => {
+                  setBarcodeInput(e.target.value)
+                  handleBarcodeKeyDown(e as unknown as React.KeyboardEvent<HTMLInputElement>)
+                }}
+                onKeyDown={handleBarcodeKeyDown}
+                placeholder="Escanear código de barras..."
+              />
+            </div>
+            <Button type="button" variant="outline" onClick={handleBarcodeButtonClick}>
+              <ScanBarcode className="w-4 h-4" />
+            </Button>
+            <Input
+              type="number"
+              min="1"
+              value={itemQuantity}
+              onChange={(e) => setItemQuantity(parseInt(e.target.value) || 1)}
+              className="w-24"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

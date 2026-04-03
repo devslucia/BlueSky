@@ -31,6 +31,7 @@ export default function ProductsPage() {
 
   const [formData, setFormData] = useState({
     name: '',
+    barcode: '',
     category: 'screen' as ProductCategory,
     quantity: 0,
     cost_price: 0,
@@ -48,7 +49,7 @@ export default function ProductsPage() {
     let query = supabase.from('products').select('*').order('name')
     
     if (search) {
-      query = query.ilike('name', `%${search}%`)
+      query = query.or(`name.ilike.%${search}%,barcode.ilike.%${search}%`)
     }
     if (categoryFilter) {
       query = query.eq('category', categoryFilter)
@@ -75,6 +76,7 @@ export default function ProductsPage() {
     setEditingProduct(null)
     setFormData({
       name: '',
+      barcode: '',
       category: 'screen',
       quantity: 0,
       cost_price: 0,
@@ -89,6 +91,7 @@ export default function ProductsPage() {
     setEditingProduct(product)
     setFormData({
       name: product.name,
+      barcode: product.barcode || '',
       category: product.category,
       quantity: product.quantity,
       cost_price: product.cost_price,
@@ -111,7 +114,7 @@ export default function ProductsPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-slate-800">Inventario</h1>
         <Button onClick={() => { setShowForm(true); setEditingProduct(null); setFormData({
-          name: '', category: 'screen', quantity: 0, cost_price: 0, sale_price: 0, min_stock: 5, supplier: ''
+          name: '', barcode: '', category: 'screen', quantity: 0, cost_price: 0, sale_price: 0, min_stock: 5, supplier: ''
         })}}>
           <Plus className="w-4 h-4 mr-2" /> Nuevo Producto
         </Button>
@@ -148,6 +151,14 @@ export default function ProductsPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Código de Barras</label>
+                <Input
+                  value={formData.barcode}
+                  onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                  placeholder="Escanear o escribir código"
                 />
               </div>
               <div>
@@ -212,9 +223,10 @@ export default function ProductsPage() {
       <Card>
         <CardContent className="p-0">
           <Table>
-            <TableHeader>
+              <TableHeader>
               <TableRow>
                 <TableHead>Nombre</TableHead>
+                <TableHead>Barcode</TableHead>
                 <TableHead>Categoría</TableHead>
                 <TableHead>Cantidad</TableHead>
                 <TableHead>Costo</TableHead>
@@ -227,6 +239,7 @@ export default function ProductsPage() {
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-mono text-sm">{product.barcode || '-'}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{product.category}</Badge>
                   </TableCell>
@@ -255,13 +268,13 @@ export default function ProductsPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {products.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-500">
-                    No hay productos
-                  </TableCell>
-                </TableRow>
-              )}
+                {products.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-slate-500">
+                      No hay productos
+                    </TableCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </CardContent>

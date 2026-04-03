@@ -14,6 +14,7 @@ export interface Profile {
 export interface Product {
   id: string
   name: string
+  barcode?: string
   category: ProductCategory
   quantity: number
   cost_price: number

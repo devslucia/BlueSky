@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, ScanBarcode } from 'lucide-react'
+import toast from 'react-hot-toast'
 import type { Product } from '@/types'
 
 interface RepairItem {
@@ -29,6 +30,10 @@ export default function NewRepairPage() {
   const [selectedProductId, setSelectedProductId] = useState('')
   const [itemQuantity, setItemQuantity] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [barcodeInput, setBarcodeInput] = useState('')
+  const barcodeInputRef = useRef<HTMLInputElement>(null)
+  const lastKeyTime = useRef<number>(0)
+  const barcodeBuffer = useRef<string>('')
   const router = useRouter()
   const supabase = createClient()
 
@@ -39,6 +44,94 @@ export default function NewRepairPage() {
   const fetchProducts = async () => {
     const { data } = await supabase.from('products').select('*').order('name')
     setProducts(data || [])
+  }
+
+  const handleBarcodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const currentTime = Date.now()
+    const timeDiff = currentTime - lastKeyTime.current
+    
+    if (e.key === 'Enter') {
+      if (barcodeBuffer.current.length > 0) {
+        processBarcode(barcodeBuffer.current)
+        barcodeBuffer.current = ''
+        setBarcodeInput('')
+      }
+      e.preventDefault()
+      return
+    }
+    
+    if (e.key.length === 1) {
+      if (timeDiff < 100) {
+        barcodeBuffer.current += e.key
+      } else {
+        barcodeBuffer.current = e.key
+      }
+      lastKeyTime.current = currentTime
+    }
+  }
+
+  const processBarcode = async (barcode: string) => {
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('barcode', barcode)
+      .single()
+
+    if (error || !product) {
+      toast.error('Producto no encontrado')
+      return
+    }
+
+    if (product.quantity <= 0) {
+      toast.error('Producto sin stock')
+      return
+    }
+
+    const existing = repairItems.find(item => item.product.id === product.id)
+    const availableQty = product.quantity - (existing ? existing.quantity : 0)
+
+    if (availableQty <= 0) {
+      toast.error('Stock insuficiente')
+      return
+    }
+
+    const qtyToAdd = 1
+    if (existing) {
+      const newQty = existing.quantity + qtyToAdd
+      if (newQty > product.quantity) {
+        toast.error('Stock insuficiente')
+        return
+      }
+      setRepairItems(repairItems.map(item =>
+        item.product.id === product.id
+          ? { ...item, quantity: newQty }
+          : item
+      ))
+    } else {
+      setRepairItems([...repairItems, { product, quantity: qtyToAdd }])
+    }
+
+    await supabase.from('products').update({
+      quantity: product.quantity - qtyToAdd,
+    }).eq('id', product.id)
+
+    await supabase.from('stock_movements').insert({
+      product_id: product.id,
+      type: 'out',
+      quantity: qtyToAdd,
+      reason: `used in repair (new)`,
+    })
+
+    const updatedProducts = products.map(p => 
+      p.id === product.id ? { ...p, quantity: p.quantity - qtyToAdd } : p
+    )
+    setProducts(updatedProducts)
+
+    toast.success(`Agregado: ${product.name}`)
+  }
+
+  const handleBarcodeButtonClick = () => {
+    barcodeInputRef.current?.focus()
   }
 
   const addProduct = () => {
@@ -200,6 +293,21 @@ export default function NewRepairPage() {
           </CardHeader>
           <CardContent>
             <div className="flex gap-4 mb-4">
+              <div className="flex-1 relative">
+                <Input
+                  ref={barcodeInputRef}
+                  value={barcodeInput}
+                  onChange={(e) => {
+                    setBarcodeInput(e.target.value)
+                    handleBarcodeKeyDown(e as unknown as React.KeyboardEvent<HTMLInputElement>)
+                  }}
+                  onKeyDown={handleBarcodeKeyDown}
+                  placeholder="Escanear código de barras..."
+                />
+              </div>
+              <Button type="button" variant="outline" onClick={handleBarcodeButtonClick}>
+                <ScanBarcode className="w-4 h-4" />
+              </Button>
               <Select
                 options={productOptions}
                 value={selectedProductId}
